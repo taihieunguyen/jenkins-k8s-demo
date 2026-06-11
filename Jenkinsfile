@@ -10,23 +10,14 @@ spec:
     image: node:18-alpine
     command: ["cat"]
     tty: true
-  - name: docker
-    image: docker:latest
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:v1.20.0-debug
     command: ["cat"]
     tty: true
-    securityContext:
-      privileged: true
-    volumeMounts:
-    - mountPath: /var/run/docker.sock
-      name: docker-sock
   - name: kubectl
     image: bitnami/kubectl:latest
     command: ["cat"]
     tty: true
-  volumes:
-  - name: docker-sock
-    hostPath:
-      path: /var/run/docker.sock
 '''
         }
     }
@@ -48,16 +39,18 @@ spec:
         
         stage('3. Build & Đẩy Lên Private Registry') {
             steps {
-                container('docker') {
+                container('kaniko') {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-creds-id', passwordVariable: 'DOCKER_PWD', usernameVariable: 'DOCKER_USER')]) {
-                        echo 'Đang đăng nhập vào Docker Hub...'
-                        sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PWD}"
+                        echo 'Đang tiến hành tạo file cấu hình xác thực cho Kaniko...'
+                        // Kaniko yêu cầu file config.json chứa token dạng mã hóa để đăng nhập ngầm
+                        sh """
+                        mkdir -p /kaniko/.docker
+                        echo '{"auths":{"https://index.docker.io/v1/":{"username":"${DOCKER_USER}","password":"${DOCKER_PWD}"}}}' > /kaniko/.docker/config.json
+                        """
                         
-                        echo 'Đang tiến hành build Docker Image...'
-                        sh "docker build -t ${DOCKER_USER}/nodejs-demo:latest ."
-                        
-                        echo 'Đang tiến hành push Image lên Private Repository...'
-                        sh "docker push ${DOCKER_USER}/nodejs-demo:latest"
+                        echo 'Kaniko bắt đầu tiến hành đóng gói và push Image lên Docker Hub...'
+                        // Câu lệnh build và push đồng thời của Kaniko
+                        sh "/kaniko/executor --context=dir(. ) --dockerfile=Dockerfile --destination=docker.io/${DOCKER_USER}/nodejs-demo:latest"
                     }
                 }
             }
