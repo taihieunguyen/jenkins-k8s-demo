@@ -15,7 +15,7 @@ spec:
     command: ["cat"]
     tty: true
   - name: kubectl
-    image: bitnami/kubectl:latest
+    image: lachlanevenson/k8s-kubectl:v1.30.0
     command: ["cat"]
     tty: true
 '''
@@ -48,7 +48,6 @@ spec:
                         """
                         
                         echo 'Kaniko bắt đầu tiến hành đóng gói và push Image lên Docker Hub...'
-                        // Sửa lại tham số --context thành dir://. để hết lỗi cú pháp shell
                         sh "/kaniko/executor --context=dir://. --dockerfile=Dockerfile --destination=docker.io/\${DOCKER_USER}/nodejs-demo:latest"
                     }
                 }
@@ -59,7 +58,7 @@ spec:
             steps {
                 container('kubectl') {
                     echo 'Đang cập nhật ứng dụng vào K8s...'
-                    sh 'kubectl apply -f k8s-deployment.yaml'
+                    sh 'kubectl apply -f k8s-deploy.yaml'
                     echo 'Ép Kubernetes cập nhật và bốc Image mới từ Registry...'
                     sh 'kubectl rollout restart deployment/nodejs-private-app'
                 }
