@@ -1,0 +1,16 @@
+{
+  "name": "jenkins-k8s-demo",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "mocha test.js --exit"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "mocha": "^10.4.0",
+    "supertest": "^7.0.0"
+  }
+}
