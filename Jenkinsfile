@@ -14,6 +14,8 @@ spec:
     image: docker:latest
     command: ["cat"]
     tty: true
+    securityContext:
+      privileged: true
     volumeMounts:
     - mountPath: /var/run/docker.sock
       name: docker-sock
@@ -47,9 +49,7 @@ spec:
         stage('3. Build & Đẩy Lên Private Registry') {
             steps {
                 container('docker') {
-                    // ID 'dockerhub-creds-id' phải trùng khớp với ID bạn tạo trên giao diện Jenkins Credentials
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-creds-id', passwordVariable: 'DOCKER_PWD', usernameVariable: 'DOCKER_USER')]) {
-                        
                         echo 'Đang đăng nhập vào Docker Hub...'
                         sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PWD}"
                         
@@ -68,7 +68,6 @@ spec:
                 container('kubectl') {
                     echo 'Đang cập nhật ứng dụng vào K8s...'
                     sh 'kubectl apply -f k8s-deploy.yaml'
-                    
                     echo 'Ép Kubernetes cập nhật và bốc Image mới từ Registry...'
                     sh 'kubectl rollout restart deployment/nodejs-private-app'
                 }
