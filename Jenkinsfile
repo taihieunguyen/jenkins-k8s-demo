@@ -16,7 +16,7 @@ spec:
     tty: true
   - name: kubectl
     image: rancher/kubectl:v1.30.1
-    command: ["cat"]
+    command: ["kubectl", "proxy"]
     tty: true
 '''
         }
@@ -58,7 +58,7 @@ spec:
             steps {
                 container('kubectl') {
                     echo 'Đang cập nhật ứng dụng vào K8s...'
-                    sh 'kubectl apply -f k8s-deployment.yaml'
+                    sh 'kubectl apply -f k8s-deploy.yaml'
                     echo 'Ép Kubernetes cập nhật và bốc Image mới từ Registry...'
                     sh 'kubectl rollout restart deployment/nodejs-private-app'
                 }
