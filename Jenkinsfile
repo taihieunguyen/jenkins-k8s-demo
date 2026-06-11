@@ -15,7 +15,7 @@ spec:
     command: ["cat"]
     tty: true
   - name: kubectl
-    image: alpine/k8s:1.30.1
+    image: alpine/k8s:latest
     command: ["cat"]
     tty: true
 '''
