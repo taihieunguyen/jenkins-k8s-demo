@@ -15,7 +15,7 @@ spec:
     command: ["cat"]
     tty: true
   - name: kubectl
-    image: lachlanevenson/k8s-kubectl:v1.30.0
+    image: loftsh/kubectl:latest
     command: ["cat"]
     tty: true
 '''
