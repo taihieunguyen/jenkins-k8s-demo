@@ -15,8 +15,8 @@ spec:
     command: ["cat"]
     tty: true
   - name: kubectl
-    image: rancher/kubectl:v1.30.1
-    command: ["kubectl", "proxy"]
+    image: alpine/k8s:1.30.1
+    command: ["cat"]
     tty: true
 '''
         }
