@@ -42,15 +42,14 @@ spec:
                 container('kaniko') {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-creds-id', passwordVariable: 'DOCKER_PWD', usernameVariable: 'DOCKER_USER')]) {
                         echo 'Đang tiến hành tạo file cấu hình xác thực cho Kaniko...'
-                        // Kaniko yêu cầu file config.json chứa token dạng mã hóa để đăng nhập ngầm
                         sh """
                         mkdir -p /kaniko/.docker
-                        echo '{"auths":{"https://index.docker.io/v1/":{"username":"${DOCKER_USER}","password":"${DOCKER_PWD}"}}}' > /kaniko/.docker/config.json
+                        echo "{\\"auths\\":{\\"https://index.docker.io/v1/\\":{\\"username\\":\\"\${DOCKER_USER}\\",\\"password\\":\\"\${DOCKER_PWD}\\"}}}" > /kaniko/.docker/config.json
                         """
                         
                         echo 'Kaniko bắt đầu tiến hành đóng gói và push Image lên Docker Hub...'
-                        // Câu lệnh build và push đồng thời của Kaniko
-                        sh "/kaniko/executor --context=dir(. ) --dockerfile=Dockerfile --destination=docker.io/${DOCKER_USER}/nodejs-demo:latest"
+                        // Sửa lại tham số --context thành dir://. để hết lỗi cú pháp shell
+                        sh "/kaniko/executor --context=dir://. --dockerfile=Dockerfile --destination=docker.io/\${DOCKER_USER}/nodejs-demo:latest"
                     }
                 }
             }
