@@ -59,7 +59,7 @@ spec:
             steps {
                 container('kubectl') {
                     echo 'Đang cập nhật ứng dụng vào K8s...'
-                    sh 'kubectl apply -f k8s-deploy.yaml'
+                    sh 'kubectl apply -f k8s-deployment.yaml'
                     echo 'Ép Kubernetes cập nhật và bốc Image mới từ Registry...'
                     sh 'kubectl rollout restart deployment/nodejs-private-app'
                 }
